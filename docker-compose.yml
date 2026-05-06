@@ -1,0 +1,30 @@
+# SPDX-FileCopyrightText: Magenta ApS <https://magenta.dk>
+# SPDX-License-Identifier: MPL-2.0
+---
+services:
+  mo-sor:
+    build: .
+    command: ["uvicorn", "--factory", "mo_sor.app:create_app", "--host", "0.0.0.0", "--reload"]
+    environment:
+      FASTRAMQPI__LOG_LEVEL: "INFO"
+      FASTRAMQPI__JSON_LOGS: "false"
+
+      # OS2mo
+      FASTRAMQPI__MO_URL: "http://mo:5000"
+      FASTRAMQPI__CLIENT_ID: "dipex"
+      FASTRAMQPI__CLIENT_SECRET: "603f1c82-d012-4d04-9382-dbe659c533fb"
+      FASTRAMQPI__AUTH_SERVER: "http://keycloak:8080/auth"
+      FASTRAMQPI__AUTH_REALM: "mo"
+
+      HTTPX_TIMEOUT: "30"
+    networks:
+      - default
+      - os2mo_default
+    volumes:
+      - ./:/app/:ro
+    ports:
+      - 127.0.0.1:8000:8000
+
+networks:
+  os2mo_default:
+    external: true
